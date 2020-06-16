@@ -4,6 +4,7 @@ coredns and ddclient are optional, they can be skipped usin ansible tags in `pac
 it currently support terraform and packer files for:
 - scaleway
 - upcloud
+
 but other providers can be easily used
 
 whilst playbook automatically generate keys for server and client by default, private keys can be manually set to reuse configurations

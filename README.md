@@ -55,7 +55,7 @@ $ packer build packer.json
 $ terraform apply                        # init if needed
 $ terraform output ansible-host > hosts
 $ cd ../../ansible
-$ ansible -i ../infra/scw/hosts site.yml --skip-tags install
+$ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags install
 ```
 
 one use server
@@ -63,12 +63,12 @@ one use server
 $ terraform apply             # init if needed
 $ terraform output ansible-host > hosts
 $ cd ../../ansible
-$ ansible -i ../infra/scw/hosts site.yml
+$ ansible-playbook -i ../infra/scw/hosts site.yml
 ```
 
 update configuration
 ```
-$ ansible -i ../infra/scw/hosts site.yml -t setup
+$ ansible-playbook -i ../infra/scw/hosts site.yml -t setup
 ```
 
 launch for single use
@@ -76,7 +76,7 @@ launch for single use
 $ terraform apply             # init if needed
 $ terraform output ansible-host > hosts
 $ cd ../../ansible
-$ ansible -i ../infra/scw/hosts site.yml
+$ ansible-playbook -i ../infra/scw/hosts site.yml
 ```
 
 no coredns or dyndns client
@@ -84,7 +84,7 @@ no coredns or dyndns client
 $ terraform apply             # init if needed
 $ terraform output ansible-host > hosts
 $ cd ../../ansible
-$ ansible -i ../infra/scw/hosts site.yml --skip-tags corends,ddclient
+$ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags corends,ddclient
 ```
 
 ### destroy

@@ -147,10 +147,6 @@
     loop: "{{ lookup('dict', peers, wantlist=True) }}"
     register: qr_codes
 
-  # - name: print qr codes
-  #   debug:
-  #     msg: "{{ qr_codes.results }}"
-
   - name: print qr codes
     debug:
       msg: "{{ qr_codes.results | map(attribute='stdout_lines') | list }}"

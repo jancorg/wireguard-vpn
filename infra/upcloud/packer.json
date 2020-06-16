@@ -1,0 +1,21 @@
+{
+  "variables": {
+    "UPCLOUD_USERNAME": "{{ env `UPCLOUD_USERNAME` }}",
+    "UPCLOUD_PASSWORD": "{{ env `UPCLOUD_PASSWORD` }}"
+  },
+  "builders": [
+    {
+      "type": "upcloud",
+      "username": "{{ user `UPCLOUD_USERNAME` }}",
+      "password": "{{ user `UPCLOUD_PASSWORD` }}",
+      "zone": "uk-lon1",
+      "storage_uuid": "01000000-0000-4000-8000-000030200200"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/playbook.yml"
+    }
+  ]
+}

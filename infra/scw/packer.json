@@ -1,0 +1,32 @@
+{
+  "variables": {
+    "organization_id": "{{env `SCW_ORGANIZATION_ID`}}",
+    "api_token": "{{env `SCW_API_TOKEN`}}"
+  },
+  "builders": [
+    {
+      "organization_id": "{{ user `organization_id` }}",
+      "api_token": "{{ user `api_token` }}",
+      "server_name": "packer-wireguard",
+      "image_name": "ubuntu-wireguard",
+      "snapshot_name": "ubuntu-wireguard-snapshot",
+      "type": "scaleway",
+      "image": "365a8b9c-0c6e-4875-a887-dc3213db9e20",
+      "region": "par1",
+      "commercial_type": "DEV1-S",
+      "ssh_private_key_file": "~/.ssh/id_rsa.scaleway",
+      "ssh_username": "root"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "groups": ["vpn"],
+      "extra_arguments": [ 
+                            "-e skip_handlers=true"
+                          ],
+      "playbook_file": "../../ansible/site.yml",
+      "user": "root"
+    }
+  ]
+}

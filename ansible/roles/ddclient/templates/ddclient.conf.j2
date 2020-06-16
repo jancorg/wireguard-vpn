@@ -1,0 +1,10 @@
+# /etc/ddclient.conf
+pid=/var/run/ddclient.pid
+protocol={{ ddns_protocol }}
+use={{ ddns_discover_type }}
+server={{ ddns_server }}
+ssl=yes
+login={{ ddns_login }}
+password={{ ddns_password }}
+ttl={{ ddns_ttl }}
+{{ ddns_domain }}

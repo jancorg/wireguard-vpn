@@ -1,0 +1,10 @@
+---
+# file: vpn.yml
+
+- hosts: vpn
+  become: yes
+
+  roles:
+    - { role: wireguard, tags: [wireguard] }
+    - { role: ddclient, tags: [ddclient] }
+    - { role: coredns, tags: [coredns] }

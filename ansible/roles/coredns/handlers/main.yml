@@ -1,0 +1,8 @@
+---
+
+  - name: restart coredns
+    service:
+      name: "coredns"
+      state: restarted
+    when:
+      - skip_handlers | default("false") == "false"

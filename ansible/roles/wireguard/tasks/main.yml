@@ -1,0 +1,165 @@
+--- 
+
+- name: image setup
+  tags: 
+    - install
+  block:
+  - name: fetch and install wireguard repo key
+    apt_key:
+      id:  E1B39B6EF6DDB96564797591AE33835F504A1A25
+      keyserver: keyserver.ubuntu.com
+
+  - name: setup wireguard apt repos
+    apt_repository:
+      repo: "{{ item }}"
+      state: present
+      update_cache: true
+    loop:
+      - "deb http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
+      - "deb-src http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
+
+  - name: Install packages
+    apt:
+      name: "{{ item }}"
+      state: present
+      update_cache: true
+    loop:
+      - dkms
+      - iproute2
+      - iptables
+      - net-tools
+      - iputils-ping
+      # - libc6
+      - qrencode
+      - wireguard
+      - wireguard-tools
+
+  - name: Enable IPv4 forwarding
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: "1"
+      reload: true
+
+  - name: creates peers config folder
+    file:
+      path: "{{ vpn_peer_config_folder }}"
+      state: directory
+
+  - name: Enable and start WireGuard service
+    service:
+      name: "wg-quick@{{ vpn_in_iface }}"
+      enabled: yes
+
+- name: configure keys
+  tags:
+    - setup
+  block:
+  - name: server private key
+    block:
+    - name: create server key
+      command: "wg genkey"
+      register: server_key
+
+    - name: set server private key
+      set_fact:
+        vpn_privkey: "{{ server_key.stdout }}"
+
+    - name: please update this key to not be replaced on redeploy event
+      debug:
+        msg: "vpn_privkey: {{ vpn_privkey }}"
+    when: vpn_privkey is undefined
+
+  - name: server pub keys
+    block:
+    - name: generate server public key
+      shell: "echo {{ vpn_privkey }} | wg pubkey"
+      register: server_pubkey
+
+    - name: set server public key
+      set_fact:
+        vpn_pubkey: "{{ server_pubkey.stdout }}"
+
+  - name: peer private keys
+    block:
+      - name: create peers priv keys
+        command: "wg genkey"
+        register: wg_outputs
+        when: item.privkey is undefined
+        loop: "{{ peers | flatten(levels=1) }}"
+
+      - name: adds unset keys
+        set_fact:
+          peerkey:
+            peer: "{{ { 'key': item.item, 'value': { 'privkey': item.stdout }} }}"
+        loop: "{{ wg_outputs.results | flatten(levels=1) }}"
+        register: peerkeys
+        no_log: true
+
+      - name: save all private keys
+        set_fact:
+          peers: "{{ peerkeys.results | map(attribute='ansible_facts.peerkey.peer') | list | items2dict | combine(peers, recursive=True) }}"
+
+  - name: peer public keys
+    block:
+      - name: create peers pubkeys
+        shell: "echo {{ peers[item].privkey }} | wg pubkey"
+        register: wg_outputs
+        loop: "{{ peers | flatten(levels=1) }}"
+
+      - name: adds public keys
+        set_fact:
+          peerkey:
+            peer: "{{ { 'key': item.item, 'value': { 'pubkey': item.stdout }} }}"
+        loop: "{{ wg_outputs.results | flatten(levels=1) }}"
+        register: peerkeys
+        no_log: true
+
+      - name: save all private keys
+        set_fact:
+          peers: "{{ peerkeys.results | map(attribute='ansible_facts.peerkey.peer') | list | items2dict | combine(peers, recursive=True) }}"
+
+  - name: stop WireGuard service before setup
+    service:
+      name: "wg-quick@{{ vpn_in_iface }}"
+      state: stopped
+
+  - name: Setup vpn interface
+    template:
+      src: interface.conf.j2
+      dest: "/etc/wireguard/wg0.conf"
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart wireguard
+
+  - name: setup peers
+    template:
+      src: peer.conf.j2
+      dest: "{{ vpn_peer_config_folder }}/{{ item.key }}.conf"
+      owner: root
+      group: root
+      mode: 0600
+    loop: "{{ lookup('dict', peers, wantlist=True) }}"
+    no_log: true
+
+  - name: generate peers utf8 qr codes
+    shell: "qrencode -t ansiutf8 < {{ vpn_peer_config_folder }}/{{ item.key }}.conf | tee {{ vpn_peer_config_folder }}/{{ item.key }}-qr.txt"
+    loop: "{{ lookup('dict', peers, wantlist=True) }}"
+    register: qr_codes
+
+  # - name: print qr codes
+  #   debug:
+  #     msg: "{{ qr_codes.results }}"
+
+  - name: print qr codes
+    debug:
+      msg: "{{ qr_codes.results | map(attribute='stdout_lines') | list }}"
+
+  - name: generate peers png qr codes
+    shell: "qrencode -o {{ vpn_peer_config_folder }}/{{ item.key }}.png < {{ vpn_peer_config_folder }}/{{ item.key }}.conf"
+    loop: "{{ lookup('dict', peers, wantlist=True) }}"
+    no_log: true
+
+  - name: force systemd to reread configs
+    systemd:
+      daemon_reload: yes

@@ -1,0 +1,24 @@
+---
+
+  - name: Install ddclient package
+    apt:
+      name: ddclient
+      state: present
+      update_cache: true
+    tags:
+      - install
+
+  - name: Setup ddclient
+    tags:
+      - setup
+    template:
+      src: ddclient.conf.j2
+      dest: "/etc/ddclient.conf"
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart ddclient
+
+  - name: force systemd to reread configs
+    systemd:
+      daemon_reload: yes

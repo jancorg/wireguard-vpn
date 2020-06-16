@@ -1,0 +1,15 @@
+[Interface]
+PrivateKey = {{vpn_privkey}}
+Address = {{ vpn_ipv4 }}
+ListenPort = {{ vpn_port }}
+PostUp = iptables -A FORWARD -i {{ vpn_in_iface }} -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ vpn_out_iface }} -j MASQUERADE; ip6tables -A FORWARD -i {{ vpn_in_iface }} -j ACCEPT; ip6tables -t nat -A POSTROUTING -o {{ vpn_out_iface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i {{ vpn_in_iface }} -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ vpn_out_iface }} -j MASQUERADE; ip6tables -D FORWARD -i {{ vpn_in_iface }} -j ACCEPT; ip6tables -t nat -D POSTROUTING -o {{ vpn_out_iface }} -j MASQUERADE
+SaveConfig = true
+
+
+{% for k, v in peers.items() %}
+[peer]
+PublicKey = {{ v.pubkey }}
+AllowedIPs = {{ v.ipv4 }}
+
+{% endfor %}

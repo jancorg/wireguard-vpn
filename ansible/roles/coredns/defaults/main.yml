@@ -1,0 +1,8 @@
+---
+
+coredns_version: 1.6.9
+coredns_arch: linux_amd64
+coredns_user: daemon
+coredns_group: daemon
+coredns_folder: /opt/coredns
+coredns_bind_addr: 10.0.0.1

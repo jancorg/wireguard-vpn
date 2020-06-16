@@ -1,0 +1,10 @@
+[Interface]
+Address = {{item.value.ipv4}}
+PrivateKey = {{item.value.privkey}}
+ListenPort = {{vpn_port}}
+DNS = {{vpn_ipv4}}
+
+[Peer]
+PublicKey = {{vpn_pubkey}}
+Endpoint = {{vpn_endpoint}}:{{vpn_port}}
+AllowedIPs = {{vpn_allowed_ips}}

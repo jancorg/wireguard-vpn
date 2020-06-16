@@ -1,0 +1,8 @@
+---
+
+- name: restart wireguard
+  service:
+    name: "wg-quick@{{ vpn_in_iface }}"
+    state: restarted
+  when:
+    - skip_handlers | default("false") == "false"

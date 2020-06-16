@@ -1,0 +1,9 @@
+---
+
+ddns_login: loginname
+ddns_password: password
+ddns_protocol: dyndns2
+ddns_discover_type: web
+ddns_ttl: 600
+ddns_server: update.domain.org
+ddns_domain: example.com

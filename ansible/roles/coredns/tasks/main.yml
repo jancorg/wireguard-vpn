@@ -1,0 +1,41 @@
+---
+- name: install coredns
+  tags: 
+    - install
+  block:
+  - name: Creates coredns folder
+    file:
+      path: "{{ coredns_folder }}"
+      state: directory
+
+  - name: download and install coredns
+    unarchive:
+      src: "https://github.com/coredns/coredns/releases/download/v{{ coredns_version }}/coredns_{{ coredns_version }}_{{ coredns_arch }}.tgz"
+      dest: "{{ coredns_folder }}"
+      remote_src: yes
+
+- name: setup coredns
+  tags:
+    - setup
+  block: 
+  - name: setup coredns daemon
+    template:
+      src: coredns.service.j2
+      dest: "/etc/systemd/system/coredns.service"
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart coredns
+
+  - name: coredns daemon config file
+    template:
+      src: Corefile.j2
+      dest: "{{ coredns_folder }}/Corefile"
+      owner: "{{ coredns_user }}"
+      group: "{{ coredns_group }}"
+      mode: 0600
+    notify: restart coredns
+
+  - name: force systemd to reread configs
+    systemd:
+      daemon_reload: yes

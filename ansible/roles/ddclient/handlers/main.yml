@@ -1,0 +1,8 @@
+---
+
+  - name: restart ddclient
+    service:
+      name: "ddclient"
+      state: restarted
+    when:
+      - skip_handlers | default("false") == "false"

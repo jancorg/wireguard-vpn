@@ -1,0 +1,15 @@
+---
+
+# vpn_privkey: somekey
+vpn_endpoint: example.com
+vpn_port: 51820
+vpn_ipv4: 10.0.0.1
+vpn_allowed_ips: "0.0.0.0/0, ::/0"
+vpn_in_iface: wg0
+vpn_out_iface: eth0
+vpn_peer_config_folder: /root/peers
+vpn_dns_server: 10.0.0.1
+
+peers:
+  peer1:
+    ipv4: 10.0.0.2

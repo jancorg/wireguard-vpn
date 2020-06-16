@@ -118,20 +118,6 @@
         set_fact:
           peers: "{{ peerkeys.results | map(attribute='ansible_facts.peerkey.peer') | list | items2dict | combine(peers, recursive=True) }}"
 
-  - name: stop WireGuard service before setup
-    service:
-      name: "wg-quick@{{ vpn_in_iface }}"
-      state: stopped
-
-  - name: Setup vpn interface
-    template:
-      src: interface.conf.j2
-      dest: "/etc/wireguard/wg0.conf"
-      owner: root
-      group: root
-      mode: 0600
-    notify: restart wireguard
-
   - name: setup peers
     template:
       src: peer.conf.j2
@@ -155,6 +141,19 @@
     shell: "qrencode -o {{ vpn_peer_config_folder }}/{{ item.key }}.png < {{ vpn_peer_config_folder }}/{{ item.key }}.conf"
     loop: "{{ lookup('dict', peers, wantlist=True) }}"
     no_log: true
+  - name: stop WireGuard service before setup
+    service:
+      name: "wg-quick@{{ vpn_in_iface }}"
+      state: stopped
+
+  - name: Setup vpn interface
+    template:
+      src: interface.conf.j2
+      dest: "/etc/wireguard/wg0.conf"
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart wireguard
 
   - name: force systemd to reread configs
     systemd:

@@ -39,9 +39,9 @@ resource "scaleway_instance_server" "ubuntu-wireguard" {
   image = data.scaleway_image.ubuntu-wireguard.id
   ip_id = scaleway_instance_ip.ip.id
   type  = "DEV1-M"
-  provisioner "remote-exec" {
-    inline = ["docker-compose up -d"]
-  }
+#  provisioner "remote-exec" {
+#    inline = ["echo done"]
+#  }
 }
 
 resource "scaleway_instance_security_group" "vpn" {

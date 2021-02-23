@@ -38,9 +38,6 @@ resource "exoscale_security_group" "vpn" {
   name        = "wireguard"
   description = "allow vpn traffic"
 
-  inbound_default_policy  = "drop"
-  outbound_default_policy = "accept"
-
 }
 
 resource "exoscale_security_group_rules" "vpn" {

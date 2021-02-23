@@ -71,5 +71,9 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # Terraform
+infra/exoscale/.terraform
+infra/scw/.terraform
+infra/upcloud/.terraform
 *.tfstate
 *.hcl
+hosts

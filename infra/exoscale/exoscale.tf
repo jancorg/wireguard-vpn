@@ -26,7 +26,7 @@ resource "exoscale_compute" "ubuntu-wireguard" {
   size         = "Tiny"
   template_id  = data.exoscale_compute_template.ubuntu.id
   disk_size    = 50
-  key_pair     = "alice"
+  security_groups = [exoscale_security_group.vpn.name]
   user_data    = <<EOF
 #cloud-config
 package_upgrade: true
@@ -45,11 +45,13 @@ resource "exoscale_security_group_rules" "vpn" {
 
   ingress {
     protocol = "UDP"
+    cidr_list = ["0.0.0.0/0", "::/0"]
     ports = [51820]
   }
 
   ingress {
     protocol = "TCP"
+    cidr_list = ["0.0.0.0/0", "::/0"]
     ports = [22]
   }
 }

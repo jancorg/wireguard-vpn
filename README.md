@@ -75,7 +75,7 @@ $ ansible-playbook -i ../infra/scw/hosts site.yml -t setup
 launch for single use
 ```
 $ terraform apply             # init if needed
-$ terraform output ansible-host > hosts
+$ terraform output ansible_host > hosts
 $ cd ../../ansible
 $ ansible-playbook -i ../infra/scw/hosts site.yml
 ```
@@ -83,7 +83,7 @@ $ ansible-playbook -i ../infra/scw/hosts site.yml
 no coredns or dyndns client
 ```
 $ terraform apply             # init if needed
-$ terraform output ansible-host > hosts
+$ terraform output ansible_host > hosts
 $ cd ../../ansible
 $ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags corends,ddclient
 ```

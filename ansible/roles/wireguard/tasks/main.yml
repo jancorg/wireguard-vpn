@@ -9,20 +9,11 @@
       id:  E1B39B6EF6DDB96564797591AE33835F504A1A25
       keyserver: keyserver.ubuntu.com
 
-  - name: setup wireguard apt repos
-    apt_repository:
-      repo: "{{ item }}"
-      state: present
-      update_cache: true
-    loop:
-      - "deb http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
-      - "deb-src http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
-
   - name: Install packages
     apt:
       name: "{{ item }}"
       state: present
-      update_cache: true
+      update_cache: false
     loop:
       - dkms
       - iproute2

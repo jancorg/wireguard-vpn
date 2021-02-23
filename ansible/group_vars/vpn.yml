@@ -21,7 +21,7 @@ peers:
   peer2:
     ipv4: 10.123.123.3
   peer3:
-    privkey: AKEY
+    privkey: 'cHxAkDAb9LsbhcZN2g/fcfQgDhtfd/PR0rJVz5i/nUE=' #Mock key
     ipv4: 10.123.123.4
 
 coredns_bind_addr: 10.123.123.1

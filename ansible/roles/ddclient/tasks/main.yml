@@ -4,7 +4,7 @@
     apt:
       name: ddclient
       state: present
-      update_cache: true
+      update_cache: false
     tags:
       - install
 

@@ -1,0 +1,52 @@
+{
+  "variables": {
+    "image_url": "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img",
+    "image_checksum_url": "https://cloud-images.ubuntu.com/focal/current/SHA256SUMS",
+    "image_checksum_type": "sha256",
+    "image_name": "ubuntu-wireguard",
+    "image_output_file": "output-qemu/{{user `image_name`}}.qcow2",
+    "ssh_private_key_file": "~/.ssh/id_rsa.exoscale",
+    "exoscale_api_key": "{{env `EXOSCALE_API_KEY`}}",
+    "exoscale_api_secret": "{{env `EXOSCALE_API_SECRET`}}"
+  },
+  "builders": [
+    {
+      "communicator": "ssh",
+      "disk_compression": true,
+      "disk_image": true,
+      "disk_interface": "virtio",
+      "disk_size": "10240M",
+      "format": "qcow2",
+      "iso_checksum": "file:{{user `image_checksum_url`}}",
+      "iso_url": "{{user `image_url`}}",
+      "net_device": "virtio-net",
+      "qemuargs": [
+        [
+          "-drive",
+          "file={{user `image_output_file`}},format=qcow2,if=virtio"
+        ],
+        [
+          "-drive",
+          "file=seed.img,format=raw,if=virtio"
+        ]
+      ],
+      "shutdown_command": "rm -f /home/ubuntu/.ssh/authorized_keys \u0026\u0026 sudo rm -f /root/.ssh/authorized_keys \u0026\u0026 echo 'packer' | sudo -S shutdown -P now",
+      "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
+      "ssh_username": "ubuntu",
+      "type": "qemu",
+      "use_default_display": true,
+      "vm_name": "{{user `image_name`}}.qcow2"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "groups": ["vpn"],
+      "extra_arguments": [ 
+                            "-e skip_handlers=true"
+                          ],
+      "playbook_file": "../../ansible/site.yml",
+      "user": "root"
+    }
+  ]
+}

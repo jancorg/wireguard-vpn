@@ -10,3 +10,6 @@ export TF_VAR_scw_region="par1"
 
 export UPCLOUD_USERNAME="user"
 export UPCLOUD_PASSWORD="password"
+
+export EXOSCALE_API_KEY=""
+export EXOSCALE_API_SECRET=""

@@ -27,6 +27,7 @@ resource "exoscale_compute" "ubuntu-wireguard" {
   template_id  = data.exoscale_compute_template.ubuntu.id
   disk_size    = 50
   security_groups = [exoscale_security_group.vpn.name]
+  key_pair = "wireguard"
   user_data    = <<EOF
 #cloud-config
 package_upgrade: true

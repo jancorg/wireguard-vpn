@@ -25,7 +25,7 @@ resource "exoscale_compute" "ubuntu-wireguard" {
   display_name = "ubuntu-wireguard"
   size         = "Micro"
   template_id  = data.exoscale_compute_template.ubuntu.id
-  disk_size    = 5
+  disk_size    = 10
   security_groups = [exoscale_security_group.vpn.name]
   key_pair = "wireguard"
   user_data    = <<EOF

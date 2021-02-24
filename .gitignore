@@ -75,6 +75,8 @@ infra/exoscale/.terraform
 infra/scw/.terraform
 infra/upcloud/.terraform
 *.tfstate
+*.tfstate.locl.info
 *.tfstate.backup
 *.hcl
+*.tfvars
 hosts

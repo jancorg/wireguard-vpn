@@ -124,9 +124,18 @@
     loop: "{{ lookup('dict', peers, wantlist=True) }}"
     register: qr_codes
 
+  - name: output config files
+    shell: "cat {{ vpn_peer_config_folder }}/{{ item.key }}.conf"
+    loop: "{{ lookup('dict', peers, wantlist=True) }}"
+    register: peer_config
+
   - name: print qr codes
     debug:
       msg: "{{ qr_codes.results | map(attribute='stdout_lines') | list }}"
+
+  - name: print config files
+    debug:
+      msg: "{{ peer_config.results | map(attribute='stdout_lines') | list }}"
 
   - name: generate peers png qr codes
     shell: "qrencode -o {{ vpn_peer_config_folder }}/{{ item.key }}.png < {{ vpn_peer_config_folder }}/{{ item.key }}.conf"

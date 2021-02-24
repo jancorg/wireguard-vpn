@@ -54,7 +54,7 @@ packer
 $ cd  infra/scw
 $ packer build packer.json
 $ terraform apply                        # init if needed
-$ terraform output ansible-host > hosts
+$ terraform output --raw ansible-host > hosts
 $ cd ../../ansible
 $ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags install
 ```
@@ -85,7 +85,7 @@ no coredns or dyndns client
 $ terraform apply             # init if needed
 $ terraform output ansible_host > hosts
 $ cd ../../ansible
-$ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags corends,ddclient
+$ ansible-playbook -i ../infra/scw/hosts site.yml --skip-tags coredns,ddclient
 ```
 
 ### destroy

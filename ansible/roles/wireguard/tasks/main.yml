@@ -4,11 +4,9 @@
   tags: 
     - install
   block:
-  - name: fetch and install wireguard repo key
-    apt_key:
-      id:  E1B39B6EF6DDB96564797591AE33835F504A1A25
-      keyserver: keyserver.ubuntu.com
-
+  - name: Wait for automatic system updates
+    become: yes
+    shell: "while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 1; done;"
   - name: Install packages
     apt:
       name: "{{ item }}"
@@ -109,6 +107,12 @@
         set_fact:
           peers: "{{ peerkeys.results | map(attribute='ansible_facts.peerkey.peer') | list | items2dict | combine(peers, recursive=True) }}"
 
+  - name: collect ipinfo
+    uri:
+      url: "https://ipinfo.io/ip"
+      return_content: yes
+    register: ipinfo
+
   - name: setup peers
     template:
       src: peer.conf.j2
@@ -124,18 +128,16 @@
     loop: "{{ lookup('dict', peers, wantlist=True) }}"
     register: qr_codes
 
-  - name: output config files
-    shell: "cat {{ vpn_peer_config_folder }}/{{ item.key }}.conf"
-    loop: "{{ lookup('dict', peers, wantlist=True) }}"
+  - name: read config files
+    shell: "cat {{ vpn_peer_config_folder }}/peer*.conf"
     register: peer_config
+
+  - name: print config files
+    debug: msg="{{ peer_config.stdout_lines }}"
 
   - name: print qr codes
     debug:
       msg: "{{ qr_codes.results | map(attribute='stdout_lines') | list }}"
-
-  - name: print config files
-    debug:
-      msg: "{{ peer_config.results | map(attribute='stdout_lines') | list }}"
 
   - name: generate peers png qr codes
     shell: "qrencode -o {{ vpn_peer_config_folder }}/{{ item.key }}.png < {{ vpn_peer_config_folder }}/{{ item.key }}.conf"

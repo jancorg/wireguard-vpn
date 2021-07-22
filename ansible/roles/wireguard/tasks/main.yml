@@ -4,25 +4,14 @@
   tags: 
     - install
   block:
-  - name: fetch and install wireguard repo key
-    apt_key:
-      id:  E1B39B6EF6DDB96564797591AE33835F504A1A25
-      keyserver: keyserver.ubuntu.com
-
-  - name: setup wireguard apt repos
-    apt_repository:
-      repo: "{{ item }}"
-      state: present
-      update_cache: true
-    loop:
-      - "deb http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
-      - "deb-src http://ppa.launchpad.net/wireguard/wireguard/ubuntu bionic main"
-
+  - name: Wait for automatic system updates
+    become: yes
+    shell: "while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 1; done;"
   - name: Install packages
     apt:
       name: "{{ item }}"
       state: present
-      update_cache: true
+      update_cache: false
     loop:
       - dkms
       - iproute2
@@ -118,6 +107,12 @@
         set_fact:
           peers: "{{ peerkeys.results | map(attribute='ansible_facts.peerkey.peer') | list | items2dict | combine(peers, recursive=True) }}"
 
+  - name: collect ipinfo
+    uri:
+      url: "https://ipinfo.io/ip"
+      return_content: yes
+    register: ipinfo
+
   - name: setup peers
     template:
       src: peer.conf.j2
@@ -132,6 +127,13 @@
     shell: "qrencode -t ansiutf8 < {{ vpn_peer_config_folder }}/{{ item.key }}.conf | tee {{ vpn_peer_config_folder }}/{{ item.key }}-qr.txt"
     loop: "{{ lookup('dict', peers, wantlist=True) }}"
     register: qr_codes
+
+  - name: read config files
+    shell: "cat {{ vpn_peer_config_folder }}/peer*.conf"
+    register: peer_config
+
+  - name: print config files
+    debug: msg="{{ peer_config.stdout_lines }}"
 
   - name: print qr codes
     debug:

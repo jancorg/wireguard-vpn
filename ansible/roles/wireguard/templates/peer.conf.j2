@@ -6,5 +6,9 @@ DNS = {{vpn_ipv4}}
 
 [Peer]
 PublicKey = {{vpn_pubkey}}
+{% if vpn_endpoint != 'example.com' %}
 Endpoint = {{vpn_endpoint}}:{{vpn_port}}
+{% else %}
+Endpoint = {{ipinfo.content}}:{{vpn_port}}
+{% endif %}
 AllowedIPs = {{vpn_allowed_ips}}

@@ -8,11 +8,11 @@ ddns_password: password
 ddns_server: update.example.org
 ddns_domain: domain.example.com
 
-# vpn_privkey: 
-vpn_endpoint: domain.example.com
+# vpn_privkey:
+#vpn_endpoint: domain.example.com #Optional. Defaults to IP
 vpn_ipv4: 10.123.123.1
 vpn_allowed_ips: "0.0.0.0/0, ::/0"
-vpn_out_iface: ens2
+vpn_out_iface: eth0
 vpn_dns_server: 10.123.123.1
 
 peers:
@@ -21,8 +21,10 @@ peers:
   peer2:
     ipv4: 10.123.123.3
   peer3:
-    privkey: AKEY
-    ipv4: 10.123.123.4
+    ipv4: 10.123.123.3
+  #peer4:
+  #  privkey: 'cHxAkDAb9LsbhcZN2g/fcfQgDhtfd/PR0rJVz5i/nUE=' #Mock key
+  #  ipv4: 10.123.123.4
 
 coredns_bind_addr: 10.123.123.1
 coredns_version: 1.6.9

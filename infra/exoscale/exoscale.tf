@@ -57,7 +57,7 @@ resource "exoscale_security_group_rules" "vpn" {
   }
 }
 
-
-output "ansible_host" {
-  value       = "[vpn]\n${exoscale_compute.ubuntu-wireguard.ip_address} ansible_user=root"
+resource "local_file" "hosts" {
+  filename = "../../hosts"
+  content = "[vpn]\n${exoscale_compute.ubuntu-wireguard.ip_address} ansible_user=root"
 }

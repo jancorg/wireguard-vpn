@@ -24,10 +24,6 @@
         [
           "-drive",
           "file={{user `image_output_file`}},format=qcow2,if=virtio"
-        ],
-        [
-          "-drive",
-          "file=seed.img,format=raw,if=virtio"
         ]
       ],
       "shutdown_command": "rm -f /home/ubuntu/.ssh/authorized_keys \u0026\u0026 sudo rm -f /root/.ssh/authorized_keys \u0026\u0026 echo 'packer' | sudo -S shutdown -P now",

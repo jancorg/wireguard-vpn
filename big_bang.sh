@@ -5,10 +5,12 @@ set -xeou pipefail
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "${SCRIPT_DIR}"
 
-# Detect the active vendor
-echo "[Info] Detecting vendor..."
+# Load and save env variables
+source env-vars.source_me
 
-vendor='exoscale'
+# Detect the active vendor
+# shellcheck disable=SC2154
+echo "[Info] Vendor is ${vendor}"
 
 echo "[Info] ${vendor} detected"
 # Switch to the vendor terraform
@@ -27,3 +29,9 @@ cd ../../ansible
 echo "[Info] Waiting a bit for all routing to be online..."
 sleep 30
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i "../hosts" site.yml --skip-tags ddclient
+
+# Start VPN connection
+echo "[Info] Connecting to vpn defines in /tmp/generated_wg0.conf"
+echo "[Info] You have 10 seconds to cancel."
+sleep 10
+wg-quick up /tmp/generated_wg0.conf

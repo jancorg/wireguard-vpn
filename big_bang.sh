@@ -17,7 +17,7 @@ echo "[Info] ${vendor} detected"
 cd "infra/${vendor}/"
 
 echo "[Info] Terraform phase"
-terraform apply
+terraform apply -auto-approve
 
 echo "[Info] Hosts configuration"
 cat ../../hosts
@@ -35,3 +35,5 @@ echo "[Info] Connecting to vpn defines in /tmp/generated_wg0.conf"
 echo "[Info] You have 10 seconds to cancel."
 sleep 10
 wg-quick up /tmp/generated_wg0.conf
+
+echo "[Info] wg-quick down /tmp/generated_wg0.conf when you want"

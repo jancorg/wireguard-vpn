@@ -6,13 +6,18 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "${SCRIPT_DIR}"
 
 # Load and save env variables
-source env-vars.source_me
-
-# Detect the active vendor
+source env-vars.source_me || true
+if [ -z ${vendor+x} ]; then
+  read -p "Enter vendor [exoscale, scw, upcloud]: " vendor
+  echo "export vendor=\"${vendor}\"" >> env-vars.source_me
+fi
 # shellcheck disable=SC2154
 echo "[Info] Vendor is ${vendor}"
 
-echo "[Info] ${vendor} detected"
+# Delegate getting the vendor variables from it
+"infra/${vendor}/load_settings.sh"
+source env-vars.source_me
+
 # Switch to the vendor terraform
 cd "infra/${vendor}/"
 
@@ -31,7 +36,7 @@ sleep 30
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i "../hosts" site.yml --skip-tags ddclient
 
 # Start VPN connection
-echo "[Info] Connecting to vpn defines in /tmp/generated_wg0.conf"
+echo "[Info] Connecting to vpn defined in /tmp/generated_wg0.conf"
 echo "[Info] You have 10 seconds to cancel."
 sleep 10
 wg-quick up /tmp/generated_wg0.conf

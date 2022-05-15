@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -xeou pipefail
+set -eou pipefail
 
 # Track the location of the script and go there
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )

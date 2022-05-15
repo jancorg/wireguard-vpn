@@ -1,9 +1,23 @@
+# Quick usage
+Run:
+```bash
+./big_bang.sh
+```
+It will request the needed parameters for your preferred vendor (scaleway, upcloud, or exoscale).
+Then it will:
+1. Run the terraform setup to assemble the infrasctructure in the vendor
+2. Run the ansible scripts to install and configure wireguard, iptables, and coreDNS
+3. Generate a simple wg config file in /tmp (2 more peers will be ready to be used by other devices)
+4. Run wireguard quick to connect automatically to the VPN
+
+# Details
 deploys a wireguard vpn server with coredns and dynamic dns client. Its mission is to exit to internet using the different locations that any configured datacenter can provide with.
 coredns and ddclient are optional, they can be skipped usin ansible tags in `packer.json` or `ansible` command
 
-it currently support terraform and packer files for:
+it currently supports terraform and packer files for:
 - scaleway
 - upcloud
+- exoscale
 
 but other providers can be easily used
 

@@ -80,3 +80,6 @@ infra/upcloud/.terraform
 *.hcl
 *.tfvars
 hosts
+
+# File with environment variables
+env-vars.source_me
